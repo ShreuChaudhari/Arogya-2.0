@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-import fitz  # PyMuPDF
+import fitz  
 import re
 import pandas as pd
 
@@ -23,7 +23,6 @@ def extract_invoice_fields(text):
         "Treatment Details": ""
     }
 
-    # Example regex patterns (modify as per invoice format)
     claim_amount_match = re.search(r"Claim Amount:\s*\$?(\d+[\.\d+]*)", text)
     diagnosis_match = re.search(r"Diagnosis:\s*(.*)", text)
     hospital_match = re.search(r"Hospital Name:\s*(.*)", text)
@@ -46,14 +45,12 @@ def extract_invoice_fields(text):
 @app.post("/extract/")
 async def extract_invoice_data(file: UploadFile = File(...)):
     try:
-        # Extract text from PDF
         pdf_bytes = await file.read()
         extracted_text = extract_text_from_pdf(pdf_bytes)
 
         if not extracted_text:
             raise HTTPException(status_code=400, detail="No text found in the PDF.")
 
-        # Extract structured fields
         invoice_data = extract_invoice_fields(extracted_text)
 
         return {
